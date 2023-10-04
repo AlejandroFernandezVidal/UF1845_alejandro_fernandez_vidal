@@ -1,0 +1,76 @@
+MySQL QUERIES
+
+ANIMAL
+	Mostrar - SELECT * FROM animals.animal WHERE nom="PEPITO";
+	Añadir - INSERT INTO animals.animal (nom, xip, dia_entrada, poblacion_idpoblacion, raça_idraça) VALUES ("PEPITO", "1", "2022-12-29", "1", "2");
+	Modificar - UPDATE animal SET xip=0 WHERE idanimal=1; (necesitamos poner la primary key para update)
+	Borrar - DELETE FROM animal WHERE idanimal=3;
+
+PERSONA
+	Mostrar - SELECT * FROM animals.persona WHERE nom="Esteban";
+	Añadir - INSERT INTO animals.persona (nom, cognoms, dni, email, poblacion_idpoblacion) VALUES ("Jose", "Ramos", "11111111A", "jr@gmail.com", "4");
+	Modificar - UPDATE animals.persona SET cognoms = "Alvarez" WHERE idpersona = "3";
+	Borrar - DELETE FROM persona WHERE idpersona=2;
+
+APADRINA
+	INSERT INTO animals.apadrina (idpersona, idanimal, dia) VALUES ("2", "2", "2023-07-26");
+
+ADOPTAR
+	INSERT INTO animals.sortida (idanimal, dia, tipus_idtipus) VALUES ("3", "2023-07-26", "2");
+
+SORTIDA
+	INSERT INTO animals.sortida (idanimal, idpersona, dia, tipus_idtipus) VALUES ("1", "3", "2023-07-22", "1");
+
+
+LISTADO animales con dia entrada, poblacion, raza y especie ordenado por idanimal
+	SELECT animal.idanimal,animal.nom,animal.dia_entrada,poblacion.nom,raça.nom,especie.nom FROM animal,poblacion,raça,especie WHERE animal.poblacion_idpoblacion=poblacion.idpoblacion AND 
+	animal.raça_idraça=raça.idraça AND raça.especie_idespecie=especie.idespecie
+	ORDER BY idanimal;
+	
+	SELECT animal.idanimal,animal.nom,animal.dia_entrada,poblacion.nom,raça.nom,especie.nom FROM animal LEFT JOIN poblacion ON animal.poblacion_idpoblacion=poblacion.idpoblacion LEFT JOIN raça ON 
+	animal.raça_idraça=raça.idraça LEFT JOIN especie ON raça.especie_idespecie=especie.idespecie;
+
+
+LISTADO de personas con nombre poblacion
+	SELECT persona.nom,poblacion.nom FROM persona,poblacion WHERE persona.poblacion_idpoblacion=idpoblacion;
+	SELECT persona.nom,poblacion.nom FROM persona JOIN poblacion ON persona.poblacion_idpoblacion=idpoblacion;
+
+
+LISTADO de personas con animal apadrinado
+	SELECT persona.nom,animal.nom FROM apadrina,persona,animal WHERE apadrina.idanimal=animal.idanimal AND apadrina.idpersona=persona.idpersona;
+	SELECT persona.nom,animal.nom FROM apadrina LEFT JOIN animal ON apadrina.idanimal=animal.idanimal LEFT JOIN persona ON apadrina.idpersona=persona.idpersona;
+
+
+LISTADO salidas adoptados
+	SELECT animal.nom,tipus.definicio,persona.nom FROM sortida,persona,animal,tipus WHERE sortida.idanimal=animal.idanimal AND sortida.tipus_idtipus=tipus.idtipus AND sortida.idpersona=persona.idpersona;
+	SELECT animal.nom,tipus.definicio,persona.nom FROM sortida JOIN animal ON sortida.idanimal=animal.idanimal JOIN tipus ON sortida.tipus_idtipus=tipus.idtipus JOIN persona ON 
+	sortida.idpersona=persona.idpersona;
+
+
+LISTADO salidas adoptados con nombre persona y fallecidos
+	SELECT animal.nom,tipus.definicio,persona.nom FROM sortida,persona,animal,tipus WHERE sortida.idanimal=animal.idanimal AND sortida.tipus_idtipus=tipus.idtipus AND sortida.idpersona=persona.idpersona UNION
+	SELECT animal.nom,tipus.definicio,null as nompersona FROM sortida,animal,tipus WHERE sortida.idanimal=animal.idanimal AND sortida.tipus_idtipus=tipus.idtipus AND sortida.tipus_idtipus="2";
+
+	SELECT animal.nom,tipus.definicio,persona.nom FROM sortida LEFT JOIN animal ON sortida.idanimal=animal.idanimal LEFT JOIN tipus ON sortida.tipus_idtipus=tipus.idtipus LEFT JOIN persona ON
+	sortida.idpersona=persona.idpersona;
+
+
+LISTADO salidas adoptados sin persona y fallecidos
+	SELECT animal.nom,tipus.definicio FROM sortida,animal,tipus WHERE sortida.idanimal=animal.idanimal AND sortida.tipus_idtipus=tipus.idtipus;
+	
+	SELECT animal.nom,tipus.definicio FROM sortida JOIN animal ON sortida.idanimal=animal.idanimal JOIN tipus ON sortida.tipus_idtipus=tipus.idtipus;
+
+
+LISTADO entrada animales con nombre, poblacion y especie
+	SELECT animal.dia_entrada,animal.nom,poblacion.nom AS poblacion,especie.nom AS especie FROM animal,poblacion,raça,especie WHERE animal.poblacion_idpoblacion=poblacion.idpoblacion
+	AND animal.raça_idraça=raça.idraça AND raça.especie_idespecie=especie.idespecie
+	ORDER BY dia_entrada;
+	
+	SELECT animal.dia_entrada,animal.nom,poblacion.nom AS poblacion,especie.nom AS especie FROM animal JOIN poblacion ON animal.poblacion_idpoblacion=poblacion.idpoblacion JOIN raça ON
+	animal.raça_idraça=raça.idraça JOIN especie ON raça.especie_idespecie=especie.idespecie;
+
+CONSULTAS EXTRA
+	SELECT animal.dia_entrada,animal.nom,poblacion.nom AS poblacion,especie.nom AS especie FROM animal JOIN poblacion ON animal.poblacion_idpoblacion=poblacion.idpoblacion JOIN raça ON
+	animal.raça_idraça=raça.idraça JOIN especie ON raça.especie_idespecie=especie.idespecie;
+SELECT animal.nom, animal.dia_entrada, poblacion.nom, especie.nom, raça.nom FROM animal LEFT JOIN poblacion ON poblacion_idpoblacion=idpoblacion JOIN raça ON raça_idraça=idraça JOIN especie ON especie_idespecie=idespecie;
+SELECT sortida.dia AS salida, animal.nom, animal.dia_entrada AS entrada, persona.nom, persona.cognoms,persona.dni, persona.email, tipus.definicio FROM sortida LEFT JOIN animal ON sortida.idanimal=animal.idanimal LEFT JOIN persona ON sortida.idpersona=persona.idpersona JOIN tipus ON sortida.tipus_idtipus=tipus.idtipus;
